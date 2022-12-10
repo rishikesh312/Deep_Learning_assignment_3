@@ -31,10 +31,10 @@ print(images.size())
 """Still not complete"""
 globalmax=nn.MaxPool2d(2,)
 globavg=nn.AvgPool2d(1)
-x_max=torch.max(images,dim=-1)
+
+x_max=torch.max(torch.max(images,dim=-1).values,dim=-1)[0]
 #x_avg = torch.av
 #model(image.unsqueeze(0)) ""Try this later""
-t1=globalmax(images)
-t=globavg(t1)
-print(t1.size())
-print(t.size())
+#T=transforms.ToTensor()(x_max)
+print(x_max.size())
+
