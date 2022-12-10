@@ -54,9 +54,7 @@ class CnnP2(nn.Module):
         x = self.conv3(x)
         x = self.relu3(x)
         x = self.maxpool3(x)
-        print(x.size())
         x = x.view(x.size(0), -1)
-        print(x.view(x.size(0),-1).size())
         x = self.linear(x)
         
         return x
