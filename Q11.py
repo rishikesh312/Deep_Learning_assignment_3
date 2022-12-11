@@ -32,9 +32,9 @@ print(images.size())
 globalmax=nn.MaxPool2d(2,)
 globavg=nn.AvgPool2d(1)
 
-x_max=torch.max(torch.max(images,dim=-1).values,dim=-1)[0]
-#x_avg = torch.av
-#model(image.unsqueeze(0)) ""Try this later""
-#T=transforms.ToTensor()(x_max)
-print(x_max.size())
+x_m1_max = torch.max(torch.max(images,dim=-1).values,dim=-1)[0]
+x_m1_avg = torch.mean(torch.mean(images,dim=-1),dim=-1)
+
+print("Gobal max pooling: ",x_m1_max.size())
+print("Gobal average pooling: ",x_m1_avg.size())
 

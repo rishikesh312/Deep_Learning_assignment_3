@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Dec 10 14:36:20 2022
+Created on Sat Dec 10 13:04:29 2022
 
 @author: rishi
 """
@@ -9,24 +9,18 @@ Created on Sat Dec 10 14:36:20 2022
 import torch
 import torchvision
 import torch.nn as nn
-import math
 from torchvision import transforms
 
 resize=28
 transform = transforms.Compose(
 [transforms.ToTensor(),transforms.Resize(resize)])
-path="mnist-varres-64"
+path="mnist-varres"
 training_dataset = torchvision.datasets.ImageFolder(root=path,
                                                     transform=transform)
-dataset_size=len(training_dataset)
-print(len(training_dataset))
-training_size=math.ceil(0.6*dataset_size)
-validation_size=math.floor(0.4*dataset_size)
 
-
-train_dl, valid_dl = torch.utils.data.random_split(training_dataset, [training_size, validation_size])
-trainloader = torch.utils.data.DataLoader(train_dl, batch_size=256, shuffle=True, num_workers=2)
-valloader = torch.utils.data.DataLoader(valid_dl, batch_size=256, shuffle=True, num_workers=2)
+train_dl, valid_dl = torch.utils.data.random_split(training_dataset, [50000, 20000])
+trainloader = torch.utils.data.DataLoader(train_dl, batch_size=16, shuffle=True, num_workers=2)
+valloader = torch.utils.data.DataLoader(valid_dl, batch_size=16, shuffle=True, num_workers=2)
 
 
 
@@ -62,7 +56,6 @@ class CnnP2(nn.Module):
         x = self.maxpool3(x)
         x = x.view(x.size(0), -1)
         x = self.linear(x)
-        
         return x
 
 # Calling Train set.
@@ -70,9 +63,7 @@ model_base = CnnP2()
 loss_fn = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model_base.parameters(), lr=0.001)
 
-print("Number of parameters: ", sum(p.numel() for p in model_base.parameters()))
-
-for epoch in range(10):  # loop over the dataset multiple times
+for epoch in range(2):  # loop over the dataset multiple times
 
     correct = 0.0
     total = 0.0
@@ -93,15 +84,25 @@ for epoch in range(10):  # loop over the dataset multiple times
     total += labels.size(0)
     #print("Hello")
     correct += (predicted == labels).sum().item()
-    print(f'Iter {epoch+1} - Training Accuracy: {100 * correct // total} %')
-    for x, y in valloader:
-      y_pred = model_base(x)
-
-      _, predicted = torch.max(y_pred.data, 1)
-
-      total += y.size(0)
-      correct += (predicted == y).sum().item()
-
-    print(f'Iter {epoch+1} - Validation Accuracy: {100 * (correct / total)} %')
+    print(f'[Iter {epoch+1}] - Accuracy: {100 * correct // total} %')
 
 print('Finished Training!')
+
+
+#Test Accuracy 
+with torch.no_grad():
+  correct = 0
+  total = 0
+
+  for x, y in valloader:
+    y_pred = model_base(x)
+
+    _, predicted = torch.max(y_pred.data, 1)
+
+    total += y.size(0)
+    correct += (predicted == y).sum().item()
+
+  print(f'Accuracy: {100 * (correct / total)} %')
+
+
+

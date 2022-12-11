@@ -9,7 +9,6 @@ import torchvision
 import torch
 import torchvision.transforms as transforms
 import torch.nn as nn
-import os
 import math
 #change the value of N. N can be 32 , 48 , 64
 N=64
@@ -40,10 +39,10 @@ class NN(nn.Module):
         self.con2 = nn.Conv2d(16, 32,kernel_size=3,stride=1,padding=1)
         self.relu2 = nn.ReLU()
         self.maxpool2 = nn.MaxPool2d(2,2)
-        self.con3 = nn.Conv2d(32, N, kernel_size=3, stride=1, padding=1)
+        self.con3 = nn.Conv2d(32, 81, kernel_size=3, stride=1, padding=1)
         self.relu3 = nn.ReLU()
         self.maxpool3 = nn.MaxPool2d(2,2)
-        self.lin=nn.Linear(N,10)
+        self.lin=nn.Linear(81,10)
     def forward(self,x):
         x=self.con1(x)
         x=self.relu1(x)
@@ -62,8 +61,10 @@ model = NN()
 loss_function=nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(),lr=0.001)
 
+print("Number of parameters: ", sum(p.numel() for p in model.parameters()))
+
 #Training
-for epoch in range(2):
+for epoch in range(10):
     correct = 0.0
     total = 0.0
 
@@ -78,10 +79,30 @@ for epoch in range(2):
     _, predicted = torch.max(outputs.data, 1)
     total += labels.size(0)
     correct += (predicted == labels).sum().item()
-    print(f'[Epochs {epoch+1}] - Accuracy: {100 * correct // total} %')
+    print(f'Epochs {epoch+1} - Training Accuracy: {100 * correct // total} %')
+    
+    for X,y in val_load:
+        y_pred = model(X)
+        _,predicted = torch.max(y_pred.data,1)
+    total +=y.size(0)
+    correct += (predicted == y).sum().item()
+    print("Epoch",epoch+1," - Validation Accuracy:",(correct/total)*100)
 
-print('Finished Training!')
+          
+        
+print('Completed Successfully')
+
+#Test Accuracy 
+'''
+with torch.no_grad():
+    correct = 0
+    total = 0
+    for X,y in val_load:
+        y_pred = model(X)
+        _,predicted = torch.max(y_pred.data,1)
+    total +=y.size(0)
+    correct += (predicted == y).sum().item()
+    print("Accuracy:",(correct/total)*100)
 
         
-        
-        
+  '''      
