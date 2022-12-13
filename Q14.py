@@ -91,18 +91,4 @@ for epoch in range(10):
           
         
 print('Completed Successfully')
-
-#Test Accuracy 
-'''
-with torch.no_grad():
-    correct = 0
-    total = 0
-    for X,y in val_load:
-        y_pred = model(X)
-        _,predicted = torch.max(y_pred.data,1)
-    total +=y.size(0)
-    correct += (predicted == y).sum().item()
-    print("Accuracy:",(correct/total)*100)
-
-        
-  '''      
+   
